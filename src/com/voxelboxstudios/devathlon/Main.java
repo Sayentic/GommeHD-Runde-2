@@ -17,6 +17,11 @@ import com.voxelboxstudios.devathlon.worlds.Worlds;
 
 public class Main extends JavaPlugin {
 
+	/** Prefix **/
+	
+	public static String prefix = "§8» §Aviation: §7";
+	
+	
 	/** Plugin **/
 	
 	private static Main plugin;
@@ -76,6 +81,9 @@ public class Main extends JavaPlugin {
 		pm.registerEvents(new ListenerDamage(), plugin);
 		pm.registerEvents(new ListenerWeather(), plugin);
 		pm.registerEvents(new ListenerInteract(), plugin);
+		pm.registerEvents(new ListenerCreatureSpawn(), plugin);
+		pm.registerEvents(new ListenerChat(), plugin);
+		pm.registerEvents(new ListenerFood(), plugin);
 		
 		
 		/** Scheduler **/
@@ -87,6 +95,8 @@ public class Main extends JavaPlugin {
 	/** Disable **/
 	
 	public void onDisable() {
+		/** Remove entities **/
+		
 		for(World w : Bukkit.getWorlds()) {
 			for(Entity e : w.getEntities()) {
 				e.remove();

@@ -15,6 +15,11 @@ public class ListenerQuit implements Listener {
 		/** Despawn vehicle **/
 		
 		Spaceship.checkDespawn(e.getPlayer());
+		
+		
+		/** Quit message **/
+		
+		e.setQuitMessage("§8» §6" + e.getPlayer().getName() + " §7hat das Spiel verlassen.");
 	}
 	
 }

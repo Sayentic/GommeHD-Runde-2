@@ -15,6 +15,11 @@ public class ListenerKick implements Listener {
 		/** Despawn vehicle **/
 		
 		Spaceship.checkDespawn(e.getPlayer());
+		
+		
+		/** Leave message **/
+		
+		e.setLeaveMessage("§8» §6" + e.getPlayer().getName() + " §7hat das Spiel verlassen.");
 	}
 	
 }

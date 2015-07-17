@@ -13,6 +13,7 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.Main;
+import com.voxelboxstudios.devathlon.generator.WorldGenerator;
 
 public class Worlds {
 
@@ -25,7 +26,14 @@ public class Worlds {
 		
 		wc.generator(Main.getPlugin().getDefaultWorldGenerator("map", null));
 		
-		Bukkit.getWorlds().add(Bukkit.createWorld(wc));
+		World ww = Bukkit.createWorld(wc);
+		
+		Bukkit.getWorlds().add(ww);
+		
+		
+		/** Generate planets **/
+		
+		WorldGenerator.generate(ww, 16);
 		
 		
 		/** Loop through worlds **/
@@ -62,7 +70,7 @@ public class Worlds {
 			
 			/** Set time **/
 			
-			w.setTime(18000);
+			w.setTime(13000);
 			
 			
 			/** Weather **/

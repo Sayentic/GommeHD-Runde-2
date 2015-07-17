@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Minecart;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,9 +21,9 @@ public class Spaceship {
 	private Player p;
 	
 	
-	/** Minecart **/
+	/** Armor Stand **/
 	
-	private Minecart mc;
+	private ArmorStand as;
 	
 	
 	/** Constructor **/
@@ -48,23 +48,39 @@ public class Spaceship {
 	/** Spawn **/
 	
 	private void spawn() {
-		/** Minecart **/
+		/** Armor Stand **/
 		
-		mc = (Minecart) p.getWorld().spawnEntity(p.getLocation().clone().add(0, 1, 0), EntityType.MINECART);
+		as = (ArmorStand) p.getWorld().spawnEntity(p.getLocation().clone().add(0, 1, 0), EntityType.ARMOR_STAND);
 		
 		
-		/** Offset **/
+		/** Gravity **/
 		
-		mc.setDisplayBlockOffset(-1);
+		as.setGravity(true);
 		
-		/** Block **/
 		
-		mc.setDisplayBlock(new ItemStack(Material.SPONGE, 1).getData());
+		/** Plate **/
+		
+		as.setBasePlate(false);
+		
+		
+		/** Arms **/
+		
+		as.setArms(false);
+		
+		
+		/** Set helmet **/
+		
+		as.getEquipment().setHelmet(new ItemStack(Material.SPONGE));
+		
+		
+		/** Invisibility **/
+		
+		as.setVisible(false);
 		
 		
 		/** Passenger **/
 		
-		mc.setPassenger(p);
+		as.setPassenger(p);
 	}
 	
 	
@@ -73,7 +89,7 @@ public class Spaceship {
 	public void despawn() {
 		/** Remove minecart **/
 		
-		mc.remove();
+		as.remove();
 	
 		
 		/** Remove spaceship **/
@@ -82,10 +98,10 @@ public class Spaceship {
 	}
 	
 	
-	/** Get minecart **/
+	/** Get armor stand **/
 	
-	public Minecart getMinecart() {
-		return mc;
+	public ArmorStand getArmorStand() {
+		return as;
 	}
 	
 	
