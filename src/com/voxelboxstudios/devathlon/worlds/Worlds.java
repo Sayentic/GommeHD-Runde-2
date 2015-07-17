@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Minecart;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -18,6 +19,15 @@ public class Worlds {
 	/** Constructor **/
 	
 	public Worlds() {
+		/** Create map **/
+		
+		WorldCreator wc = new WorldCreator("map");
+		
+		wc.generator(Main.getPlugin().getDefaultWorldGenerator("map", null));
+		
+		Bukkit.getWorlds().add(Bukkit.createWorld(wc));
+		
+		
 		/** Loop through worlds **/
 		
 		for(final World w : Bukkit.getWorlds()) {
@@ -43,6 +53,22 @@ public class Worlds {
 					}
 				}
 			}.runTaskLater(Main.getPlugin(), 20L);
+			
+			
+			/** Set gamerules **/
+			
+			w.setGameRuleValue("doDaylightCycle", "false");
+			
+			
+			/** Set time **/
+			
+			w.setTime(18000);
+			
+			
+			/** Weather **/
+			
+			w.setStorm(false);
+			w.setThundering(false);
 		}
 	}
 	

@@ -5,9 +5,11 @@ import java.sql.SQLException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
+import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.voxelboxstudios.devathlon.generator.CleanGenerator;
 import com.voxelboxstudios.devathlon.listeners.*;
 import com.voxelboxstudios.devathlon.mysql.SQL;
 import com.voxelboxstudios.devathlon.spaceship.SpaceshipScheduler;
@@ -54,6 +56,11 @@ public class Main extends JavaPlugin {
 		}
 		
 		
+		/** Worlds **/
+		
+		new Worlds();
+		
+		
 		/** Plugin manager **/
 		
 		PluginManager pm = Bukkit.getPluginManager();
@@ -67,16 +74,13 @@ public class Main extends JavaPlugin {
 		pm.registerEvents(new ListenerQuit(), plugin);
 		pm.registerEvents(new ListenerDestroy(), plugin);
 		pm.registerEvents(new ListenerDamage(), plugin);
+		pm.registerEvents(new ListenerWeather(), plugin);
+		pm.registerEvents(new ListenerInteract(), plugin);
 		
 		
 		/** Scheduler **/
 		
 		new SpaceshipScheduler();
-		
-		
-		/** Worlds **/
-		
-		new Worlds();
 	}
 	
 	
@@ -97,4 +101,11 @@ public class Main extends JavaPlugin {
 		return plugin;
 	}
 	
+	
+	/** Default world generator **/
+	
+	@Override
+	public ChunkGenerator getDefaultWorldGenerator(String worldName, String id) {
+        return new CleanGenerator();
+    }
 }

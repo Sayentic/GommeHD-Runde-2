@@ -19,13 +19,12 @@ public class SpaceshipScheduler {
 				for(Spaceship s : Spaceship.spaceships) {
 					/** Set velocity **/
 					
-					s.getMinecart().setDerailedVelocityMod(s.getPlayer().getVelocity());
+					s.getMinecart().setDerailedVelocityMod(s.getPlayer().getLocation().getDirection());
 					
-					if(!s.getPlayer().isSneaking()) s.getMinecart().setVelocity(s.getPlayer().getLocation().getDirection().multiply(2.0).normalize());
-					else{
+					if(!s.getPlayer().isSneaking()) 
+						s.getMinecart().setVelocity(s.getPlayer().getLocation().getDirection().multiply(2.0).normalize());
+					else
 						s.getMinecart().setVelocity(new Vector(0, 0, 0));
-						s.getMinecart().setFallDistance(0);
-					}
 				}
 
 			}
