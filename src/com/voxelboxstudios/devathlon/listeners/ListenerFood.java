@@ -10,8 +10,6 @@ public class ListenerFood implements Listener {
 	
 	@EventHandler
 	public void onFood(FoodLevelChangeEvent e) {
-		/** Set food level **/
-		
 		e.setFoodLevel(20);
 	}
 	

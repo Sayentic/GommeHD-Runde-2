@@ -19,7 +19,7 @@ public class Worlds {
 
 	/** Constructor **/
 	
-	public Worlds() {
+	public Worlds(int range) {
 		/** Create map **/
 		
 		WorldCreator wc = new WorldCreator("map");
@@ -33,7 +33,7 @@ public class Worlds {
 		
 		/** Generate planets **/
 		
-		WorldGenerator.generate(ww, 16);
+		WorldGenerator.generate(ww, range);
 		
 		
 		/** Loop through worlds **/

@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.WorldBorder;
 
 public class WorldGenerator {
 	
@@ -35,6 +36,13 @@ public class WorldGenerator {
 		materials.add(Material.COBBLESTONE);
 		materials.add(Material.DIRT);
 		
+		
+		/** Set WorldBorder **/
+		
+		WorldBorder wb = w.getWorldBorder();
+		wb.setCenter((64 * range) / 2, (64 * range) / 2);
+		wb.setSize(64 * range);
+
 		
 		/** Loop **/
 		

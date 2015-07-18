@@ -1,16 +1,17 @@
 package com.voxelboxstudios.devathlon.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.Main;
 import com.voxelboxstudios.devathlon.spaceship.Spaceship;
+import com.voxelboxstudios.inventorys.Inventorys;
+import com.voxelboxstudios.util.Util;
 
 public class ListenerJoin implements Listener {
 
@@ -23,9 +24,14 @@ public class ListenerJoin implements Listener {
 		Player p = e.getPlayer();
 		
 		
+		/** Resource pack **/
+		
+		Main.packet.addChannelForPlayer(p);
+		
+		
 		/** Teleport **/
 		
-		e.getPlayer().teleport(new Location(Bukkit.getWorld("map"), 100, 100, 100));
+		Util.teleportRandom(e.getPlayer());
 		
 		
 		/** Remove vehicle **/
@@ -50,10 +56,23 @@ public class ListenerJoin implements Listener {
 		p.resetMaxHealth();
 		p.setHealth(20);
 		
+		p.setExp(0f);
+		p.setLevel(0);
+		
+		for(PotionEffect pe : p.getActivePotionEffects()){
+			p.removePotionEffect(pe.getType());
+		}
+		
 		
 		/** Clear inventory **/
 		
 		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
+		
+		
+		/** Equip player **/
+		
+		Inventorys.equip(p);
 		
 		
 		/** Game Mode **/

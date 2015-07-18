@@ -5,3 +5,17 @@ mysql:
      password: devathlon
      database: devathlon
      tableprefix: devathlon_
+gametickrate: 2
+fueltickrate: 10
+spaceshiphealth: 200
+laserdamage: 5
+explosiondamage: 35
+explosioncooldown: 1500
+maprange: 16
+hangar:
+     world: hangar
+     x: 548.355
+     y: 111
+     z: -575.5
+     yaw: 90
+     pitch: 0
