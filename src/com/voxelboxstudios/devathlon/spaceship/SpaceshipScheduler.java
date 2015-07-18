@@ -3,14 +3,17 @@ package com.voxelboxstudios.devathlon.spaceship;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 
 import com.voxelboxstudios.devathlon.Main;
 import com.voxelboxstudios.devathlon.actionbar.ActionBar;
+import com.voxelboxstudios.devathlon.inventorys.Inventorys;
 
 public class SpaceshipScheduler {
 
@@ -32,7 +35,7 @@ public class SpaceshipScheduler {
 				for(Spaceship s : Spaceship.spaceships) {
 					/** Set velocity **/
 					
-					Vector v = s.getPlayer().getLocation().getDirection().multiply(2.0).normalize();
+					Vector v = s.getPlayer().getLocation().getDirection().multiply(1.5 + (s.getSpeed() / 5f)).normalize();
 					
 					if(!s.getPlayer().isSneaking()) 
 						if(s.getFuel() > 0) s.getArmorStand().setVelocity(v);
@@ -84,7 +87,7 @@ public class SpaceshipScheduler {
 					
 					float b = (float) v.getY();
 					
-					b += 0.8;
+					b += 1;
 					
 					if(b < 0.4f) b = 0.4f;
 					
@@ -99,6 +102,38 @@ public class SpaceshipScheduler {
 					/** Set exp **/
 					
 					s.getPlayer().setExp((float) s.getHealth() / (float) Main.getMaxHealth());
+					
+					double distance = 0;
+					Spaceship dis = null;
+
+					for(Spaceship se : Spaceship.spaceships) {
+						if(se.getPlayer() != s.getPlayer()) {
+							if(se.getPlayer().getLocation().distance(s.getPlayer().getLocation())>distance){
+								distance = se.getPlayer().getLocation().distance(s.getPlayer().getLocation());
+								dis = se;
+							}
+						}
+					}
+					
+					/** Set Compass Target **/
+					
+					if(distance != 0 && dis != null){
+						s.getPlayer().setCompassTarget(dis.getArmorStand().getLocation());
+						
+						String dist = "" + Math.round(distance);
+						String str = "§7» §e" + dis.getPlayer().getName()+  "§f: §c" + dist + "m §7«";
+						
+						if(s.getPlayer().getItemInHand().getType() == Material.COMPASS){
+							ItemMeta im = s.getPlayer().getItemInHand().getItemMeta();
+							
+							im.setDisplayName(str);
+							
+							s.getPlayer().getItemInHand().setItemMeta(im);
+						}else{
+							s.getPlayer().getInventory().setItem(2, Inventorys.getShortItem(Material.COMPASS, str));
+						}
+					}
+					
 				}
 			}
 		}.runTaskTimer(Main.getPlugin(), tickrateGame, tickrateGame);
@@ -124,7 +159,7 @@ public class SpaceshipScheduler {
 					
 					int num = 32;
 					
-					int after = (int) (((float) s.getFuel() / 100f) * num);
+					int after = (int) (((float) s.getFuel() / 100f + s.getExtraFuel()) * num);
 					
 					if(after < 0) after = 0;
 					if(after > num) after = num;

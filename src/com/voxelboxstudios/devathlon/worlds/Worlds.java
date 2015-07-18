@@ -6,20 +6,30 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Minecart;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.Main;
 import com.voxelboxstudios.devathlon.generator.WorldGenerator;
+import com.voxelboxstudios.devathlon.hologram.Hologram;
+import com.voxelboxstudios.devathlon.villager.VillagerShop;
 
 public class Worlds {
 
 	/** Constructor **/
 	
 	public Worlds(int range) {
+		/** Config **/
+		
+		final FileConfiguration cfg = Main.getPlugin().getConfig();
+		
+		
 		/** Create map **/
 		
 		WorldCreator wc = new WorldCreator("map");
@@ -31,17 +41,27 @@ public class Worlds {
 		Bukkit.getWorlds().add(ww);
 		
 		
+		/** Load Hangar Map **/
+		
+		WorldCreator wc2 = new WorldCreator("hangar");
+		
+		wc2.generator(Main.getPlugin().getDefaultWorldGenerator("hangar", null));
+		
+		World ww2 = Bukkit.createWorld(wc2);
+		
+		Bukkit.getWorlds().add(ww2);
+		
+		
 		/** Generate planets **/
 		
 		WorldGenerator.generate(ww, range);
-		
 		
 		/** Loop through worlds **/
 		
 		for(final World w : Bukkit.getWorlds()) {
 			/** Load all chunks **/
 			
-			loadAllChunks(w);
+			//loadAllChunks(w);
 			
 			
 			/** Auto save **/
@@ -55,9 +75,33 @@ public class Worlds {
 				@Override
 				public void run() {
 					for(Entity e : w.getEntities()) {
-						if(e instanceof Minecart) ((Minecart) e).eject();
+						if(e instanceof Minecart){
+							((Minecart) e).eject();
+						}
 						
-						e.remove();
+						/** Dont remove Item Frames **/
+						
+						if(!(e instanceof ItemFrame)){
+							e.remove();
+						}
+					}
+					
+					if(w.getName().equalsIgnoreCase("hangar")){
+						/** Location **/
+						
+						Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
+						
+						Hologram h = new Hologram(hangar_spawn, "§7» §6Zurück zum Spiel §7«");
+						
+						
+						/** Add Holograms **/
+						
+						Main.holograms.add(h);
+						
+						
+						/** Create Villagers **/
+						
+						VillagerShop.spawnVillagers();
 					}
 				}
 			}.runTaskLater(Main.getPlugin(), 20L);
@@ -83,6 +127,7 @@ public class Worlds {
 	
 	/** Load all chunks **/
 	
+	@SuppressWarnings("unused")
 	private static void loadAllChunks(World world) {
 		/** Pattern **/
 		

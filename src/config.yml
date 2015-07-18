@@ -13,6 +13,7 @@ explosiondamage: 35
 explosioncooldown: 1500
 hangarcooldown: 5000
 maprange: 16
+killaura: 250
 hangar:
      world: hangar
      x: 548.355
@@ -20,3 +21,39 @@ hangar:
      z: -575.5
      yaw: 90
      pitch: 0
+villager:
+     1:
+          name: '&6Helme'
+          x: 544
+          y: 111
+          z: -561
+          yaw: 0.0
+          pitch: 180.0
+     2:
+          name: '&6Anzuege'
+          x: 548
+          y: 111
+          z: -561
+          yaw: 0.0
+          pitch: 180.0
+     3:
+          name: '&6Waffen'
+          x: 565
+          y: 111
+          z: -561
+          yaw: 0.0
+          pitch: 180.0
+     4:
+          name: '&6Raumschiffe'
+          x: 569
+          y: 111
+          z: -561
+          yaw: 0.0
+          pitch: 180.0
+     5:
+          name: '&6Tech-Nick'
+          x: 557
+          y: 111
+          z: -557
+          yaw: 0.0
+          pitch: 180.0

@@ -1,6 +1,7 @@
 package com.voxelboxstudios.devathlon;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -12,11 +13,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.generator.CleanGenerator;
+import com.voxelboxstudios.devathlon.hologram.Hologram;
 import com.voxelboxstudios.devathlon.listeners.*;
 import com.voxelboxstudios.devathlon.mysql.SQL;
 import com.voxelboxstudios.devathlon.resource.IPacketPlayResourcePackStatus;
 import com.voxelboxstudios.devathlon.resource.PacketPlayResourcePackStatus;
 import com.voxelboxstudios.devathlon.resource.Status;
+import com.voxelboxstudios.devathlon.shop.Shop;
 import com.voxelboxstudios.devathlon.spaceship.SpaceshipScheduler;
 import com.voxelboxstudios.devathlon.worlds.Worlds;
 
@@ -27,9 +30,15 @@ public class Main extends JavaPlugin {
 	public static IPacketPlayResourcePackStatus packet;
 	
 	
+	/** Holograms **/
+	
+	public static ArrayList<Hologram> holograms = new ArrayList<Hologram>();
+	public static HashMap<String, Hologram> fuel_holograms = new HashMap<String, Hologram>();
+	
+	
 	/** Prefix **/
 	
-	public static String prefix = "§8» §Aviation: §7";
+	public static String prefix = "§8» §6Aviation: §7";
 	
 	
 	/** Plugin **/
@@ -60,7 +69,15 @@ public class Main extends JavaPlugin {
 	/** Hangar cooldown **/
 	
 	private static int hangarcooldown;
+
 	
+	/** Kill aura **/
+	
+	private static int killaura;
+	
+	/** Fuel In Lobby **/
+	
+	public static HashMap<String, Integer> fuel_reload = new HashMap<String, Integer>();
 	
 	/** Enable **/
 	
@@ -73,6 +90,11 @@ public class Main extends JavaPlugin {
 		/** Packet **/
 		
 		packet = new PacketPlayResourcePackStatus();
+		
+		
+		/** Shops **/
+		
+		Shop.setup();
 		
 		
 		/** Inject packet **/
@@ -96,22 +118,22 @@ public class Main extends JavaPlugin {
 		explosiondamage = getConfig().getInt("explosiondamage");
 		explosioncooldown = getConfig().getInt("explosioncooldown");
 		hangarcooldown = getConfig().getInt("hangarcooldown");
-		
+		killaura = getConfig().getInt("killaura");
 		
 		/** Connect to database **/
 		
 		try {
 			SQL.connect();
-		} catch (ClassNotFoundException | SQLException e) {
-			/** Log error **/
+		} catch(Exception e) {
+			/** Error **/
 			
 			Bukkit.getLogger().severe("Konnte keine Verbindung zur MySQL-Datenbank aufbauen!");
+
 			
-			
-			/** Stop server **/
+			/** Shutdown **/
 			
 			Bukkit.shutdown();
-			
+
 			
 			/** Return **/
 			
@@ -147,11 +169,13 @@ public class Main extends JavaPlugin {
 		pm.registerEvents(new ListenerHeld(), plugin);
 		pm.registerEvents(new ListenerFood(), plugin);
 		pm.registerEvents(new ListenerBreak(), plugin);
+		pm.registerEvents(new ListenerShop(), plugin);
 		
 		
 		/** Scheduler **/
 		
 		new SpaceshipScheduler();
+		
 	}
 	
 	
@@ -215,6 +239,13 @@ public class Main extends JavaPlugin {
 	
 	public static int getHangarCooldown() {
 		return hangarcooldown;
+	}
+
+	
+	/** Kill aura **/
+	
+	public static int getKillAura() {
+		return killaura;
 	}
 	
 

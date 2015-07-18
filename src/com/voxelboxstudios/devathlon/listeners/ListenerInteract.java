@@ -13,23 +13,25 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.voxelboxstudios.devathlon.Main;
 import com.voxelboxstudios.devathlon.actionbar.ActionBar;
+import com.voxelboxstudios.devathlon.hologram.Hologram;
+import com.voxelboxstudios.devathlon.shop.Shop;
 import com.voxelboxstudios.devathlon.spaceship.Spaceship;
-import com.voxelboxstudios.inventorys.Inventorys;
-import com.voxelboxstudios.util.Messages;
-import com.voxelboxstudios.util.Util;
+import com.voxelboxstudios.devathlon.util.Messages;
 
 public class ListenerInteract implements Listener {
 	
@@ -51,12 +53,52 @@ public class ListenerInteract implements Listener {
 			Entity en = e.getRightClicked();
 			
 			
-			/** Check if armor stand **/
+			/** Check entity **/
 			
-			if(en instanceof ArmorStand) {
+			if(en instanceof ArmorStand || en instanceof ItemFrame) {
 				/** Cancel event **/
 				
 				e.setCancelled(true);
+			}
+		}
+	}
+	
+	
+	/** Interact villager **/
+	
+	@EventHandler
+	public void onInteract(PlayerInteractEntityEvent e) {
+		/** Entity **/
+		
+		Entity en = e.getRightClicked();
+		
+		if(en == null) return;
+		
+		
+		/** Check if villager **/
+		
+		if(en instanceof Villager) {
+			/** Cancel event **/
+			
+			e.setCancelled(true);
+			
+			
+			/** Check which villager **/
+			
+			if(e.getRightClicked().getName().equalsIgnoreCase("§6Helme")) {
+				//Shop.open(e.getPlayer(), 1);
+				
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Anzuege")) {
+				//Shop.open(e.getPlayer(), 0);
+				
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Waffen")) {
+				//Shop.open(e.getPlayer(), 3);
+				
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Raumschiffe")) {
+				Shop.open(e.getPlayer(), 2);
 			}
 		}
 	}
@@ -115,7 +157,7 @@ public class ListenerInteract implements Listener {
 									
 									/** Damage **/
 									
-									b.damage(Main.getLaserDamage());
+									b.damage(Main.getLaserDamage(), e.getPlayer());
 									
 									
 									/** Cooldown **/
@@ -195,7 +237,7 @@ public class ListenerInteract implements Listener {
 										
 										/** Damage **/
 										
-										b.damage(Main.getExplosionDamage());
+										b.damage(Main.getExplosionDamage() - b.getResistance() + s.getDamage(), e.getPlayer());
 										
 										
 										/** Play sounds **/
@@ -223,26 +265,7 @@ public class ListenerInteract implements Listener {
 						}
 					}
 				}
-				
-				
-				/** Radar **/
-				
-				if(e.getPlayer().getInventory().getHeldItemSlot() == 2) {
-					for(Spaceship se : Spaceship.spaceships) {
-						if(se.getPlayer() != e.getPlayer()) {
-							e.getPlayer().setCompassTarget(se.getPlayer().getLocation());
-							break;
-						}
-					}
-				}
-			} else {
-				/** Send player fuel Message **/
-					
-				Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
 			}
-			
-			
-			/** Hangar **/
 			
 			if(e.getPlayer().getInventory().getHeldItemSlot() == 8) {
 				/** Check cooldown **/
@@ -265,7 +288,7 @@ public class ListenerInteract implements Listener {
 					
 					/** Set exp **/
 					
-					e.getPlayer().setExp(1f);
+					e.getPlayer().setExp(0f);
 					
 					
 					/** Set item slot **/
@@ -278,19 +301,22 @@ public class ListenerInteract implements Listener {
 					ActionBar.sendActionBar(e.getPlayer(), "");
 					
 					
-					/** Config **/
+					/** Hangar Spawn **/
 					
 					FileConfiguration cfg = Main.getPlugin().getConfig();
-					
-					
-					/** Location **/
-					
 					Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
-					
+
 					
 					/** Teleport **/
 					
 					e.getPlayer().teleport(hangar_spawn);
+					
+					
+					/** Show Holograms **/
+					
+					for(Hologram h : Main.holograms){
+						h.show(e.getPlayer());
+					}
 					
 					
 					/** Play effect **/
@@ -309,40 +335,16 @@ public class ListenerInteract implements Listener {
 				} else {
 					Messages.sendMessageWarning(e.getPlayer(), "Während des Gefechts kannst du nicht zum Hangar!");
 				}
+			}else{
+				/** Send player fuel Message **/
+							
+				Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
 			}
 		} else {
 			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if(e.getClickedBlock() != null) {
 					if(e.getClickedBlock().getType() == Material.SPONGE) {
-						/** Clear inventory **/
-						
-						e.getPlayer().getInventory().clear();
-						
-						
-						/** Inventory **/
-						
-						Inventorys.equip(e.getPlayer());
-						
-						
-						/** Potions **/
-						
-						for(PotionEffect pe : e.getPlayer().getActivePotionEffects()) {
-							e.getPlayer().removePotionEffect(pe.getType());
-						}
-						
-						
-						/** Teleport **/
-						
-						Util.teleportRandom(e.getPlayer());
-						
-						
-						/** Spaceship **/
-						
-						new BukkitRunnable() {
-							public void run() {
-								new Spaceship(e.getPlayer());
-							}
-						}.runTaskLater(Main.getPlugin(), 10L);
+						Spaceship.createSpaceship(e.getPlayer());
 					}
 				}
 			}

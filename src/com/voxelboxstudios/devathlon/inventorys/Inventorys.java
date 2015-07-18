@@ -1,4 +1,4 @@
-package com.voxelboxstudios.inventorys;
+package com.voxelboxstudios.devathlon.inventorys;
 
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -17,6 +17,7 @@ public class Inventorys {
 		p.getInventory().addItem(getShortItem(Material.BONE, "§7» §cLaser §7«"));
 		p.getInventory().addItem(getShortItem(Material.FIREBALL, "§7» §cRaketenwerfer §7«"));
 		p.getInventory().addItem(getShortItem(Material.COMPASS, "§7» §cRadar §7«"));
+		p.getInventory().addItem(getShortItem(Material.CARROT, "§7» §cTreibstoff §7«"));
 		p.getInventory().setItem(8, getShortItem(Material.BARRIER, "§7» §cZurück zum Hangar§7«"));
 		
 		

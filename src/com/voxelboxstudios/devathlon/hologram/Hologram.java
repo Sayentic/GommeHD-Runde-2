@@ -1,11 +1,13 @@
 package com.voxelboxstudios.devathlon.hologram;
 
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -42,7 +44,15 @@ public class Hologram {
 		/** Armor stand **/
 		
 		as = new EntityArmorStand(((CraftWorld) location.getWorld()).getHandle());
-	      
+	     
+		
+		/** Marker **/
+		
+		NBTTagCompound compound = new NBTTagCompound();
+	    ((CraftEntity) as.getBukkitEntity()).getHandle().e(compound);
+	    compound.setInt("Marker", 1);
+	    ((CraftEntity) as.getBukkitEntity()).getHandle().f(compound);
+	    
 		
 		/** Set custom name **/
 		
