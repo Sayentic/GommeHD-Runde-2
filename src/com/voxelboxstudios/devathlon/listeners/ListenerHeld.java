@@ -10,17 +10,17 @@ public class ListenerHeld implements Listener {
 	
 	@EventHandler
 	public void onHeld(PlayerItemHeldEvent e) {
-		if(e.getPreviousSlot() == 1 && e.getNewSlot() == 2) {
+		if(e.getPreviousSlot() == 3 && e.getNewSlot() == 4) {
 			e.setCancelled(true);
 			
 			e.getPlayer().getInventory().setHeldItemSlot(8);
 		} else if(e.getPreviousSlot() == 8 && e.getNewSlot() == 7) {
 			e.setCancelled(true);
 			
-			e.getPlayer().getInventory().setHeldItemSlot(1);
+			e.getPlayer().getInventory().setHeldItemSlot(3);
 		}
 		
-		if(e.getNewSlot() > 1 && e.getNewSlot() < 8) e.setCancelled(true);
+		if(e.getNewSlot() > 3 && e.getNewSlot() < 8) e.setCancelled(true);
 	}
 	
 }

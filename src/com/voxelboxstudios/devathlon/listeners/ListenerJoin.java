@@ -59,7 +59,7 @@ public class ListenerJoin implements Listener {
 		p.setExp(0f);
 		p.setLevel(0);
 		
-		for(PotionEffect pe : p.getActivePotionEffects()){
+		for(PotionEffect pe : p.getActivePotionEffects()) {
 			p.removePotionEffect(pe.getType());
 		}
 		

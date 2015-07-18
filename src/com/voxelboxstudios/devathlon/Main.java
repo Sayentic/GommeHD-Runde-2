@@ -57,6 +57,11 @@ public class Main extends JavaPlugin {
 	private static int explosioncooldown;
 	
 	
+	/** Hangar cooldown **/
+	
+	private static int hangarcooldown;
+	
+	
 	/** Enable **/
 	
 	public void onEnable() {
@@ -90,6 +95,7 @@ public class Main extends JavaPlugin {
 		maxhealth = getConfig().getInt("spaceshiphealth");
 		explosiondamage = getConfig().getInt("explosiondamage");
 		explosioncooldown = getConfig().getInt("explosioncooldown");
+		hangarcooldown = getConfig().getInt("hangarcooldown");
 		
 		
 		/** Connect to database **/
@@ -202,6 +208,13 @@ public class Main extends JavaPlugin {
 	
 	public static int getExplosionCooldown() {
 		return explosioncooldown;
+	}
+	
+	
+	/** Hangar cooldown **/
+	
+	public static int getHangarCooldown() {
+		return hangarcooldown;
 	}
 	
 

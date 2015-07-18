@@ -16,7 +16,7 @@ public class Util {
 	public static void teleportRandom(Player p) {
 		/** Range **/
 		
-		int range = Main.getPlugin().getConfig().getInt("maprange");
+		int range = Main.getPlugin().getConfig().getInt("maprange") * 64;
 		
 		
 		/** Random **/

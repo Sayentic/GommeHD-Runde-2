@@ -11,6 +11,7 @@ spaceshiphealth: 200
 laserdamage: 5
 explosiondamage: 35
 explosioncooldown: 1500
+hangarcooldown: 5000
 maprange: 16
 hangar:
      world: hangar

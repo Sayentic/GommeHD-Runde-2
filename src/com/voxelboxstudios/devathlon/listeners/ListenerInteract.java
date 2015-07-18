@@ -19,9 +19,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import com.voxelboxstudios.devathlon.Main;
+import com.voxelboxstudios.devathlon.actionbar.ActionBar;
 import com.voxelboxstudios.devathlon.spaceship.Spaceship;
 import com.voxelboxstudios.inventorys.Inventorys;
 import com.voxelboxstudios.util.Messages;
@@ -32,6 +36,7 @@ public class ListenerInteract implements Listener {
 	/** Cooldown **/
 	
 	private Map<String, Long> cooldown = new HashMap<String, Long>();
+	private Map<String, Long> hcooldown = new HashMap<String, Long>();
 	
 	
 	/** Entity interact entity **/
@@ -59,8 +64,9 @@ public class ListenerInteract implements Listener {
 	
 	/** Interact **/
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
-	public void onInteract(PlayerInteractEvent e) {
+	public void onInteract(final PlayerInteractEvent e) {
 		/** Find spaceship **/
 			
 		Spaceship s = null;
@@ -110,6 +116,11 @@ public class ListenerInteract implements Listener {
 									/** Damage **/
 									
 									b.damage(Main.getLaserDamage());
+									
+									
+									/** Cooldown **/
+									
+									hcooldown.put(b.getPlayer().getName(), System.currentTimeMillis());
 									
 									
 									/** Break **/
@@ -177,6 +188,11 @@ public class ListenerInteract implements Listener {
 										damaged.add(b);
 										
 										
+										/** Cooldown **/
+										
+										hcooldown.put(b.getPlayer().getName(), System.currentTimeMillis());
+										
+										
 										/** Damage **/
 										
 										b.damage(Main.getExplosionDamage());
@@ -209,9 +225,39 @@ public class ListenerInteract implements Listener {
 				}
 				
 				
-				/** Hangar **/
+				/** Radar **/
 				
-				if(e.getPlayer().getInventory().getHeldItemSlot() == 8) {
+				if(e.getPlayer().getInventory().getHeldItemSlot() == 2) {
+					for(Spaceship se : Spaceship.spaceships) {
+						if(se.getPlayer() != e.getPlayer()) {
+							e.getPlayer().setCompassTarget(se.getPlayer().getLocation());
+							break;
+						}
+					}
+				}
+			} else {
+				/** Send player fuel Message **/
+					
+				Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
+			}
+			
+			
+			/** Hangar **/
+			
+			if(e.getPlayer().getInventory().getHeldItemSlot() == 8) {
+				/** Check cooldown **/
+				
+				boolean cool = false;
+				
+				if(hcooldown.containsKey(e.getPlayer().getName())) {
+					if(System.currentTimeMillis() - hcooldown.get(e.getPlayer().getName()) >= Main.getHangarCooldown()) {
+						cool = true;
+					}
+				} else {
+					cool = true;
+				}
+				
+				if(cool) {
 					/** Remove spaceship **/
 					
 					Spaceship.checkDespawn(e.getPlayer());
@@ -227,29 +273,62 @@ public class ListenerInteract implements Listener {
 					e.getPlayer().getInventory().setItem(8, null);
 					
 					
-					/** Teleport to hangar **/
+					/** Action bar **/
+					
+					ActionBar.sendActionBar(e.getPlayer(), "");
+					
+					
+					/** Config **/
 					
 					FileConfiguration cfg = Main.getPlugin().getConfig();
 					
-					e.getPlayer().teleport(new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch")));
+					
+					/** Location **/
+					
+					Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
+					
+					
+					/** Teleport **/
+					
+					e.getPlayer().teleport(hangar_spawn);
+					
+					
+					/** Play effect **/
+					
+					for(int i = 0; i < 12; i++) e.getPlayer().playEffect(hangar_spawn, Effect.LARGE_SMOKE, i);
+					
+					
+					/** Gravity **/
+					
+					e.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20000, 0));
 					
 					
 					/** Play sound **/
 					
 					e.getPlayer().getWorld().playSound(e.getPlayer().getLocation(), Sound.PISTON_RETRACT, 1, 0.5f);
+				} else {
+					Messages.sendMessageWarning(e.getPlayer(), "Während des Gefechts kannst du nicht zum Hangar!");
 				}
-			} else {
-				/** Send player fuel Message **/
-				
-				Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
 			}
 		} else {
 			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
 				if(e.getClickedBlock() != null) {
 					if(e.getClickedBlock().getType() == Material.SPONGE) {
+						/** Clear inventory **/
+						
+						e.getPlayer().getInventory().clear();
+						
+						
 						/** Inventory **/
 						
 						Inventorys.equip(e.getPlayer());
+						
+						
+						/** Potions **/
+						
+						for(PotionEffect pe : e.getPlayer().getActivePotionEffects()) {
+							e.getPlayer().removePotionEffect(pe.getType());
+						}
 						
 						
 						/** Teleport **/
@@ -259,11 +338,14 @@ public class ListenerInteract implements Listener {
 						
 						/** Spaceship **/
 						
-						new Spaceship(e.getPlayer());
+						new BukkitRunnable() {
+							public void run() {
+								new Spaceship(e.getPlayer());
+							}
+						}.runTaskLater(Main.getPlugin(), 10L);
 					}
 				}
 			}
 		}
 	}
-	
 }
