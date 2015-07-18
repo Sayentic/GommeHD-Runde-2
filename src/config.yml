@@ -57,3 +57,9 @@ villager:
           z: -557
           yaw: 0.0
           pitch: 180.0
+hangarfuel:
+     x: 557.477
+     y: 112
+     z: -560.826
+     yaw: -179.2
+     pitch: -4.9

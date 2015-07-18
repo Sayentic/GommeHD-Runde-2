@@ -16,7 +16,6 @@ import org.bukkit.entity.Minecart;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.Main;
-import com.voxelboxstudios.devathlon.generator.WorldGenerator;
 import com.voxelboxstudios.devathlon.hologram.Hologram;
 import com.voxelboxstudios.devathlon.villager.VillagerShop;
 
@@ -54,7 +53,8 @@ public class Worlds {
 		
 		/** Generate planets **/
 		
-		WorldGenerator.generate(ww, range);
+		//WorldGenerator.generate(ww, range);
+		
 		
 		/** Loop through worlds **/
 		

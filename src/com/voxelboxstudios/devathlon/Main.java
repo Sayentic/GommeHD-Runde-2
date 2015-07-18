@@ -2,6 +2,7 @@ package com.voxelboxstudios.devathlon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -14,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.generator.CleanGenerator;
 import com.voxelboxstudios.devathlon.hologram.Hologram;
+import com.voxelboxstudios.devathlon.hub.HangarScheduler;
 import com.voxelboxstudios.devathlon.listeners.*;
 import com.voxelboxstudios.devathlon.mysql.SQL;
 import com.voxelboxstudios.devathlon.resource.IPacketPlayResourcePackStatus;
@@ -75,9 +77,16 @@ public class Main extends JavaPlugin {
 	
 	private static int killaura;
 	
+	
 	/** Fuel In Lobby **/
 	
 	public static HashMap<String, Integer> fuel_reload = new HashMap<String, Integer>();
+
+
+	/** Fuel **/
+	
+	public static Map<String, Integer> fuel = new HashMap<String, Integer>();
+	
 	
 	/** Enable **/
 	
@@ -175,6 +184,7 @@ public class Main extends JavaPlugin {
 		/** Scheduler **/
 		
 		new SpaceshipScheduler();
+		new HangarScheduler();
 		
 	}
 	

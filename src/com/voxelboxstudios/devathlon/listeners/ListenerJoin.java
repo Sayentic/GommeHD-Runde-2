@@ -1,5 +1,6 @@
 package com.voxelboxstudios.devathlon.listeners;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
@@ -14,6 +15,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.voxelboxstudios.devathlon.Main;
+import com.voxelboxstudios.devathlon.aura.Aura;
 import com.voxelboxstudios.devathlon.hologram.Hologram;
 import com.voxelboxstudios.devathlon.inventorys.Inventorys;
 import com.voxelboxstudios.devathlon.mysql.SQL;
@@ -43,8 +45,22 @@ public class ListenerJoin implements Listener {
 					}
 					
 					if(!SQL.getDatabase().getQuery("SELECT * FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'").next()) {
-						SQL.getDatabase().queryUpdate("INSERT INTO " + SQL.prefix + "upgrades (uuid, speed, damage, resistance, fuel) VALUES ('" + p.getUniqueId().toString() + "', '0', '0', '0', '0')");
+						SQL.getDatabase().queryUpdate("INSERT INTO " + SQL.prefix + "upgrades (uuid, speed, damage, resistance, fuel, afuel) VALUES ('" + p.getUniqueId().toString() + "', '0', '0', '0', '0', '0')");
 					}
+					
+					ResultSet r = SQL.getDatabase().getQuery("SELECT afuel FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'");
+					
+					if(r.next()) {
+						Main.fuel.put(p.getName(), r.getInt(1));
+					}
+					
+					Aura.load(p);
+				
+					
+					/** Equip player **/
+					
+					Inventorys.equip(p);
+					p.getInventory().setItem(8, null);
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
@@ -73,10 +89,11 @@ public class ListenerJoin implements Listener {
 		
 		/** Teleport **/
 
-		Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
-		p.teleport(hangar_spawn);
-
-		p.setCompassTarget(hangar_spawn);
+		try {
+			Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
+			p.teleport(hangar_spawn);
+			p.setCompassTarget(hangar_spawn);
+		} catch(Exception ex) {}
 		
 		
 		/** Clear Player **/
@@ -98,17 +115,17 @@ public class ListenerJoin implements Listener {
 			h.show(p);
 		}
 		
+		final Location hangar_fuel_location = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangarfuel.x"), cfg.getDouble("hangarfuel.y"), cfg.getDouble("hangarfuel.z"), cfg.getInt("hangarfuel.yaw"), cfg.getInt("hangarfuel.pitch"));
+		
+		Hologram h2 = new Hologram(hangar_fuel_location, "§cTreibstoff: §e100%");
+		h2.show(p);
+		Main.fuel_holograms.put(p.getName(), h2);
+		
 		
 		/** Clear inventory **/
 		
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
-		
-		
-		/** Equip player **/
-		
-		Inventorys.equip(p);
-		p.getInventory().setItem(8, null);
 		
 		
 		/** Game Mode **/

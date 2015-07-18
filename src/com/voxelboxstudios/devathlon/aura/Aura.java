@@ -164,5 +164,33 @@ public class Aura {
 		
 		return a;
 	}
+
+
+	/** Load **/
+	
+	public static void load(Player p) {
+		/** Get aura **/
+		
+		ResultSet rs = null;
+		
+		try {
+			rs = SQL.getDatabase().getQuery("SELECT aura FROM " + SQL.prefix + "aura WHERE uuid='" + p.getUniqueId().toString() + "'");
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+		
+		int a = 0;
+		
+		try {
+			while(rs.next()) a = rs.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+		/** Put into map **/
+		
+		aura.put(p.getName(), a);
+	}
 	
 }

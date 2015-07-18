@@ -50,7 +50,7 @@ public class SQL {
 		/** Table **/
 		
 		db.queryUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "aura (id int AUTO_INCREMENT primary key NOT NULL, uuid VARCHAR(100), aura INT)");
-		db.queryUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "upgrades (id int AUTO_INCREMENT primary key NOT NULL, uuid VARCHAR(100), speed INT, damage INT, resistance INT, fuel INT)");
+		db.queryUpdate("CREATE TABLE IF NOT EXISTS " + prefix + "upgrades (id int AUTO_INCREMENT primary key NOT NULL, uuid VARCHAR(100), speed INT, damage INT, resistance INT, fuel INT, afuel INT)");
 	}
 	
 	

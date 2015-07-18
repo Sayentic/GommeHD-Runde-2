@@ -1,5 +1,6 @@
 package com.voxelboxstudios.devathlon.spaceship;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -87,25 +88,41 @@ public class Spaceship {
 		/** Extra fuel **/
 		
 		try {
-			this.extrafuel = SQL.getDatabase().getQuery("SELECT fuel FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'").getInt(1);
+			ResultSet r = SQL.getDatabase().getQuery("SELECT speed FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'");
+			
+			if(r.next()) { 
+				this.speed = r.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			this.speed = SQL.getDatabase().getQuery("SELECT speed FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'").getInt(1);
+			ResultSet r = SQL.getDatabase().getQuery("SELECT fuel FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'");
+			
+			if(r.next()) {
+				this.fuel = r.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			this.damage = SQL.getDatabase().getQuery("SELECT damage FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'").getInt(1);
+			ResultSet r = SQL.getDatabase().getQuery("SELECT damage FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'");
+			
+			if(r.next()) {
+				this.damage = r.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		try {
-			this.resistance = SQL.getDatabase().getQuery("SELECT resistance FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'").getInt(1);
+			ResultSet r = SQL.getDatabase().getQuery("SELECT resistance FROM " + SQL.prefix + "upgrades WHERE uuid='" + p.getUniqueId().toString() + "'");
+			
+			if(r.next()) {
+				this.resistance = r.getInt(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

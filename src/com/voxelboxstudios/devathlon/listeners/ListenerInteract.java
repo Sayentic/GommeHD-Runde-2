@@ -1,5 +1,6 @@
 package com.voxelboxstudios.devathlon.listeners;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +30,12 @@ import org.bukkit.util.Vector;
 import com.voxelboxstudios.devathlon.Main;
 import com.voxelboxstudios.devathlon.actionbar.ActionBar;
 import com.voxelboxstudios.devathlon.hologram.Hologram;
+import com.voxelboxstudios.devathlon.mysql.SQL;
 import com.voxelboxstudios.devathlon.shop.Shop;
 import com.voxelboxstudios.devathlon.spaceship.Spaceship;
 import com.voxelboxstudios.devathlon.util.Messages;
+
+import net.md_5.bungee.api.ChatColor;
 
 public class ListenerInteract implements Listener {
 	
@@ -83,21 +87,26 @@ public class ListenerInteract implements Listener {
 			e.setCancelled(true);
 			
 			
+			/** Config **/
+			
+			FileConfiguration cfg = Main.getPlugin().getConfig();
+			
+			
 			/** Check which villager **/
 			
-			if(e.getRightClicked().getName().equalsIgnoreCase("§6Helme")) {
+			if(e.getRightClicked().getName().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', cfg.getString("villager.1.name")))) {
 				//Shop.open(e.getPlayer(), 1);
 				
-				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
-			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Anzuege")) {
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', cfg.getString("villager.2.name")))) {
 				//Shop.open(e.getPlayer(), 0);
 				
-				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
-			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Waffen")) {
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', cfg.getString("villager.3.name")))) {
 				//Shop.open(e.getPlayer(), 3);
 				
-				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Der Tech-Nick ist informiert!");
-			} else if(e.getRightClicked().getName().equalsIgnoreCase("§6Raumschiffe")) {
+				e.getRightClicked().sendMessage(Main.prefix + "Dieser Shop wird momentan repariert. Tech-Nick ist informiert!");
+			} else if(e.getRightClicked().getName().equalsIgnoreCase(ChatColor.translateAlternateColorCodes('&', cfg.getString("villager.4.name")))) {
 				Shop.open(e.getPlayer(), 2);
 			}
 		}
@@ -109,6 +118,11 @@ public class ListenerInteract implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInteract(final PlayerInteractEvent e) {
+		/** Cancel slot 4 **/
+		
+		if(e.getPlayer().getInventory().getHeldItemSlot() == 3) e.setCancelled(true);
+		
+		
 		/** Find spaceship **/
 			
 		Spaceship s = null;
@@ -178,7 +192,49 @@ public class ListenerInteract implements Listener {
 						for(int i = 0; i < 10; i++) e.getPlayer().getWorld().playEffect(point, Effect.COLOURED_DUST, 14);
 					}
 				}
+	
 				
+				/** Fuel **/
+				
+				if(e.getPlayer().getInventory().getHeldItemSlot() == 3) {
+					if(Main.fuel.get(e.getPlayer().getName()) > 0) {
+						/** Put into hashmap **/
+						
+						Main.fuel.put(e.getPlayer().getName(), Main.fuel.get(e.getPlayer().getName()) - 1);
+						
+						
+						/** MySQL **/
+						
+						try {
+							SQL.getDatabase().queryUpdate("UPDATE " + SQL.prefix + "upgrades SET afuel=" + Main.fuel.get(e.getPlayer().getName()) + " WHERE uuid='" + e.getPlayer().getUniqueId().toString() + "'");
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
+						
+						
+						/** Fill tank **/
+						
+						s.setFuel(100 + s.getExtraFuel());
+						
+						
+						/** Play sound **/
+						
+						e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.LEVEL_UP, 1, 3);
+						
+						
+						/** Send message **/
+						
+						e.getPlayer().sendMessage(Main.prefix + "Du hast deinen Tank aufgefüllt (§e" + Main.fuel.get(e.getPlayer().getName()) + " übrig§7).");
+						
+						
+						/** Amount **/
+						
+						e.getPlayer().getItemInHand().setAmount(e.getPlayer().getItemInHand().getAmount() - 1);
+					} else {
+						e.getPlayer().sendMessage(Main.prefix + "Du hast keinen Treibstoff mehr. Erwerbe diesen im Shop.");
+					}
+				}
+
 				
 				/** Rocket launcher **/
 				
@@ -265,7 +321,12 @@ public class ListenerInteract implements Listener {
 						}
 					}
 				}
+			} else {
+				/** Send player fuel Message **/
+							
+				if(e.getPlayer().getInventory().getHeldItemSlot() != 8) Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
 			}
+			
 			
 			if(e.getPlayer().getInventory().getHeldItemSlot() == 8) {
 				/** Check cooldown **/
@@ -305,12 +366,26 @@ public class ListenerInteract implements Listener {
 					
 					FileConfiguration cfg = Main.getPlugin().getConfig();
 					Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
-
 					
 					/** Teleport **/
 					
 					e.getPlayer().teleport(hangar_spawn);
 					
+					/** Config **/
+					
+					final Location hangar_fuel_location = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangarfuel.x"), cfg.getDouble("hangarfuel.y"), cfg.getDouble("hangarfuel.z"), cfg.getInt("hangarfuel.yaw"), cfg.getInt("hangarfuel.pitch"));
+					
+					
+					/** Set Fuel **/
+					
+					Main.fuel_reload.put(e.getPlayer().getName(), 0);
+					Hologram h1 = Main.fuel_holograms.get(e.getPlayer().getName());
+					h1.hide(e.getPlayer());
+					
+					Hologram h2 = new Hologram(hangar_fuel_location, "§cTreibstoff: §e0%");
+					h2.show(e.getPlayer());
+					Main.fuel_reload.put(e.getPlayer().getName(), 0);
+					Main.fuel_holograms.put(e.getPlayer().getName(), h2);
 					
 					/** Show Holograms **/
 					
@@ -335,10 +410,6 @@ public class ListenerInteract implements Listener {
 				} else {
 					Messages.sendMessageWarning(e.getPlayer(), "Während des Gefechts kannst du nicht zum Hangar!");
 				}
-			}else{
-				/** Send player fuel Message **/
-							
-				Messages.sendMessageAttention(e.getPlayer(), "Du benötigst Treibstoff um dies zu tun.");
 			}
 		} else {
 			if(e.getAction() == Action.RIGHT_CLICK_BLOCK) {
