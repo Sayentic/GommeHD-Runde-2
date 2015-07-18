@@ -27,12 +27,10 @@ public class HangarScheduler {
 				for(Player p : Bukkit.getOnlinePlayers()){
 					if(p.getWorld().getName().equalsIgnoreCase(cfg.getString("hangar.world"))) {
 						
-						Bukkit.broadcastMessage("Test");
-						
 						/** Check **/
 						
 						if(!Main.fuel_reload.containsKey(p.getName())) {
-							Main.fuel_reload.put(p.getName(), 100);
+							Main.fuel_reload.put(p.getName(), 0);
 							Hologram h = new Hologram(hangar_fuel_location, "§cTreibstoff: §e100%");
 							Main.fuel_holograms.put(p.getName(), h);
 						} else {

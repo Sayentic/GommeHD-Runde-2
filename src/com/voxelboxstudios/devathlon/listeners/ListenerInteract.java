@@ -367,9 +367,11 @@ public class ListenerInteract implements Listener {
 					FileConfiguration cfg = Main.getPlugin().getConfig();
 					Location hangar_spawn = new Location(Bukkit.getWorld(cfg.getString("hangar.world")), cfg.getDouble("hangar.x"), cfg.getDouble("hangar.y"), cfg.getDouble("hangar.z"), cfg.getInt("hangar.yaw"), cfg.getInt("hangar.pitch"));
 					
+					
 					/** Teleport **/
 					
 					e.getPlayer().teleport(hangar_spawn);
+					
 					
 					/** Config **/
 					
@@ -386,6 +388,7 @@ public class ListenerInteract implements Listener {
 					h2.show(e.getPlayer());
 					Main.fuel_reload.put(e.getPlayer().getName(), 0);
 					Main.fuel_holograms.put(e.getPlayer().getName(), h2);
+					
 					
 					/** Show Holograms **/
 					
